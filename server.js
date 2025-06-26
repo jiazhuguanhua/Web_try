@@ -8,14 +8,22 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
     cors: {
-        origin: "*",
+        origin: process.env.CORS_ORIGIN || "*",
         methods: ["GET", "POST"]
     }
 });
 
 // Middleware
 app.use(cors());
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 生产环境优化
+if (process.env.NODE_ENV === 'production') {
+    app.use(express.static(path.join(__dirname), {
+        maxAge: '1d', // 缓存静态文件
+        etag: true
+    }));
+}
 
 // Game state
 const rooms = new Map();
