@@ -7,7 +7,7 @@ class NetworkManager {
         this.players = new Map();
         this.gameState = null;
         
-        // For development, we'll use a simple WebSocket simulation
+        // GitHub Pages模式：使用模拟服务器
         this.simulatedServer = new SimulatedServer();
         
         this.setupEventListeners();
