@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>飞行器大战 - 多人在线游戏</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <h2>正在载入飞行器系统...</h2>
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainMenu" class="main-menu">
+        <div class="stars"></div>
+        <div class="menu-container">
+            <h1 class="game-title">
+                <span class="title-text">飞行器大战</span>
+                <span class="title-subtitle">SPACE FIGHTERS</span>
+            </h1>
+            
+            <div class="menu-buttons">
+                <button id="singlePlayerBtn" class="menu-btn primary">
+                    <span class="btn-icon">🚀</span>
+                    单人模式
+                </button>
+                <button id="localMultiplayerBtn" class="menu-btn primary">
+                    <span class="btn-icon">👥</span>
+                    本地双人
+                </button>
+                <button id="onlineMultiplayerBtn" class="menu-btn primary">
+                    <span class="btn-icon">🌐</span>
+                    在线多人
+                </button>
+                <button id="customizeBtn" class="menu-btn secondary">
+                    <span class="btn-icon">⚙️</span>
+                    自定义飞行器
+                </button>
+                <button id="aiGenerateBtn" class="menu-btn secondary">
+                    <span class="btn-icon">🤖</span>
+                    AI生成飞行器
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="onlineMenu" class="online-menu hidden">
+        <div class="online-container">
+            <h2>在线多人模式</h2>
+            <div class="online-options">
+                <div class="input-group">
+                    <label for="playerName">玩家名称:</label>
+                    <input type="text" id="playerName" placeholder="输入您的名称" maxlength="15">
+                </div>
+                <div class="room-section">
+                    <button id="createRoomBtn" class="menu-btn primary">创建房间</button>
+                    <button id="joinRoomBtn" class="menu-btn primary">加入房间</button>
+                </div>
+                <div class="room-code-section hidden">
+                    <label for="roomCode">房间代码:</label>
+                    <input type="text" id="roomCode" placeholder="输入房间代码">
+                </div>
+                <div class="online-status">
+                    <span id="connectionStatus">离线</span>
+                </div>
+            </div>
+            <button id="backToMainBtn" class="menu-btn secondary">返回主菜单</button>
+        </div>
+    </div>
+
+    <div id="customizeMenu" class="customize-menu hidden">
+        <div class="customize-container">
+            <h2>自定义飞行器</h2>
+            <div class="customize-content">
+                <div class="aircraft-preview">
+                    <canvas id="previewCanvas" width="200" height="200"></canvas>
+                </div>
+                <div class="customize-options">
+                    <div class="option-group">
+                        <label>机身颜色:</label>
+                        <div class="color-options">
+                            <div class="color-option" data-color="#FF4444"></div>
+                            <div class="color-option" data-color="#44FF44"></div>
+                            <div class="color-option" data-color="#4444FF"></div>
+                            <div class="color-option" data-color="#FFFF44"></div>
+                            <div class="color-option" data-color="#FF44FF"></div>
+                            <div class="color-option" data-color="#44FFFF"></div>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <label>飞行器类型:</label>
+                        <select id="aircraftType">
+                            <option value="fighter">战斗机</option>
+                            <option value="bomber">轰炸机</option>
+                            <option value="scout">侦察机</option>
+                            <option value="interceptor">拦截机</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label>武器类型:</label>
+                        <select id="weaponType">
+                            <option value="laser">激光炮</option>
+                            <option value="missile">导弹</option>
+                            <option value="plasma">等离子炮</option>
+                            <option value="railgun">轨道炮</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="customize-buttons">
+                <button id="saveCustomBtn" class="menu-btn primary">保存配置</button>
+                <button id="backFromCustomBtn" class="menu-btn secondary">返回</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="aiGenerateMenu" class="ai-generate-menu hidden">
+        <div class="ai-container">
+            <h2>AI生成飞行器</h2>
+            <div class="ai-content">
+                <div class="prompt-section">
+                    <label for="aiPrompt">描述您想要的飞行器:</label>
+                    <textarea id="aiPrompt" placeholder="例如: 一架红色的高速战斗机，拥有强大的激光武器和隐形功能"></textarea>
+                    <button id="generateAiBtn" class="menu-btn primary">
+                        <span class="btn-icon">🤖</span>
+                        生成飞行器
+                    </button>
+                </div>
+                <div class="ai-result">
+                    <div class="generated-preview">
+                        <canvas id="aiPreviewCanvas" width="200" height="200"></canvas>
+                    </div>
+                    <div class="generated-info">
+                        <h3 id="generatedName">生成的飞行器</h3>
+                        <p id="generatedDescription">AI将在此显示生成的飞行器描述</p>
+                        <div class="generated-stats">
+                            <div class="stat">
+                                <span>速度:</span>
+                                <span id="generatedSpeed">-</span>
+                            </div>
+                            <div class="stat">
+                                <span>火力:</span>
+                                <span id="generatedFirepower">-</span>
+                            </div>
+                            <div class="stat">
+                                <span>护甲:</span>
+                                <span id="generatedArmor">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="ai-buttons">
+                <button id="useAiBtn" class="menu-btn primary hidden">使用此配置</button>
+                <button id="backFromAiBtn" class="menu-btn secondary">返回</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameContainer" class="game-container hidden">
+        <div class="game-ui">
+            <div class="player-info">
+                <div class="player-stats" id="player1Stats">
+                    <div class="player-name">玩家1</div>
+                    <div class="health-bar">
+                        <div class="health-fill" id="player1Health"></div>
+                    </div>
+                    <div class="score">分数: <span id="player1Score">0</span></div>
+                </div>
+                <div class="player-stats" id="player2Stats">
+                    <div class="player-name">玩家2</div>
+                    <div class="health-bar">
+                        <div class="health-fill" id="player2Health"></div>
+                    </div>
+                    <div class="score">分数: <span id="player2Score">0</span></div>
+                </div>
+            </div>
+            <div class="game-controls">
+                <button id="pauseBtn" class="control-btn">⏸️</button>
+                <button id="exitGameBtn" class="control-btn">🏠</button>
+            </div>
+        </div>
+        <canvas id="gameCanvas"></canvas>
+        <div class="mobile-controls">
+            <div class="control-pad left">
+                <div class="direction-pad">
+                    <button class="control-button up" data-key="w">↑</button>
+                    <button class="control-button left" data-key="a">←</button>
+                    <button class="control-button down" data-key="s">↓</button>
+                    <button class="control-button right" data-key="d">→</button>
+                </div>
+            </div>
+            <div class="control-pad right">
+                <button class="action-button fire" data-key="space">🔥</button>
+                <button class="action-button special" data-key="shift">⚡</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pauseMenu" class="pause-menu hidden">
+        <div class="pause-container">
+            <h2>游戏已暂停</h2>
+            <div class="pause-buttons">
+                <button id="resumeBtn" class="menu-btn primary">继续游戏</button>
+                <button id="restartBtn" class="menu-btn secondary">重新开始</button>
+                <button id="exitToMenuBtn" class="menu-btn secondary">退出到主菜单</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="gameOverMenu" class="game-over-menu hidden">
+        <div class="game-over-container">
+            <h2 id="gameOverTitle">游戏结束</h2>
+            <div id="gameOverStats" class="game-over-stats">
+                <div class="final-scores">
+                    <div class="final-score">
+                        <span class="player-name">玩家1</span>
+                        <span class="score" id="finalScore1">0</span>
+                    </div>
+                    <div class="final-score">
+                        <span class="player-name">玩家2</span>
+                        <span class="score" id="finalScore2">0</span>
+                    </div>
+                </div>
+                <div class="winner" id="winnerDisplay"></div>
+            </div>
+            <div class="game-over-buttons">
+                <button id="playAgainBtn" class="menu-btn primary">再来一局</button>
+                <button id="backToMenuBtn" class="menu-btn secondary">返回主菜单</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+    <script src="network.js"></script>
+    <script src="ai-generator.js"></script>
+</body>
+</html>
